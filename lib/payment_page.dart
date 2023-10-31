@@ -44,11 +44,11 @@ class _PaymentPageState extends State<PaymentPage> {
     var options = {
       'key': widget.keyID,
       'amount': widget.amount,
-      'name': 'Sujal',
+      'name': 'User123',
       'description': 'Payment',
       'prefill': {
         'contact': '9999999999',
-        'email': 'sujalschauhan123@gmail.com'
+        'email': 'user001@gmail.com'
       },
     };
 
