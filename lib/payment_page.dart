@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:rozarpay/pages/curd.dart';
+import 'package:rozarpay/pages/getAllRefunds.dart';
 import 'package:rozarpay/utils/routes.dart';
 
 
@@ -175,7 +176,7 @@ class _PaymentPageState extends State<PaymentPage> {
         ),
         InkWell(
             onTap: () {
-              Navigator.pushNamed(context, MyRoutes.Refund);
+              Navigator.pushNamed(context, MyRoutes.FetchAll);
               //processRefund('pay_Mr7Hgx714XiLzw', 20000);
              // getDetails("pay_Mr7Hgx714XiLzw");
             },
@@ -194,15 +195,15 @@ class _PaymentPageState extends State<PaymentPage> {
                               fontWeight: FontWeight.w900,
                               color: Colors.blue.shade50)))),
             )),
-        // ElevatedButton(
-        //     onPressed: () {
-        //       Navigator.of(context).push(MaterialPageRoute(
-        //         builder: (context) {
-        //           return const CURDPage();
-        //         },
-        //       ));
-        //     },
-        //     child: const Text("CURD")),
+        ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const AllRefunds();
+                },
+              ));
+            },
+            child: const Text("CURD")),
       ]),
     );
   }

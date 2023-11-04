@@ -15,6 +15,8 @@ class CURDPage extends StatefulWidget {
   State<CURDPage> createState() => _CURDPageState();
 }
 
+String paymentId = "";
+
 class _CURDPageState extends State<CURDPage> {
   Future<UpiModel> getDetails(String id) async {
     String url = 'https://api.razorpay.com/v1/payments/$id';
@@ -54,49 +56,78 @@ class _CURDPageState extends State<CURDPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Fetch Payment"),
+        backgroundColor: Colors.greenAccent,
+      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              FutureBuilder(
-                future: getDetails("pay_Mr7Hgx714XiLzw"),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    UpiModel? upidata = snapshot.data;
-
-                    return Center(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 30,
+        child: Column(
+          children: [
+            const Text("Enter the Payment ID", style: TextStyle(fontSize: 20)),
+            TextFormField(
+              decoration: const InputDecoration(labelText: "Payment ID"),
+              onChanged: (value) {
+                paymentId = value;
+                setState(() {});
+              },
+            ),
+            FutureBuilder(
+              future: getDetails(paymentId),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  UpiModel? upidata = snapshot.data;
+                  int index = 0;
+                  return Center(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 0, vertical: 8.0),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 30,
+                                child: Text("ID: ${upidata!.id.toString()}"),
+                              ),
+                              SizedBox(
+                                height: 30,
+                                child: Text(
+                                    "Amount: ${upidata.amount.toString()}"),
+                              ),
+                              SizedBox(
+                                height: 30,
+                                child: Text(
+                                    "Status: ${upidata.status.toString()}"),
+                              ),
+                              SizedBox(
+                                height: 30,
+                                child: Text(
+                                    "Currency: ${upidata.currency.toString()}"),
+                              ),
+                              SizedBox(
+                                height: 30,
+                                child: Text(
+                                    "International: ${upidata.international.toString()}"),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                                horizontal: 0, vertical: 8.0),
-                            child: Column(
-                              children: [
-                                Text(upidata!.id.toString()),
-                                Text(upidata.amount.toString()),
-                                Text(upidata.status.toString()),
-                                Text(upidata.currency.toString()),
-                                Text(upidata.description.toString()),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
