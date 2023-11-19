@@ -8,16 +8,17 @@ import 'package:rozarpay/refund.dart';
 
 import '../models/upi_model.dart';
 
-class CURDPage extends StatefulWidget {
-  const CURDPage({super.key});
+class FetchByID extends StatefulWidget {
+
+  const FetchByID({super.key});
 
   @override
-  State<CURDPage> createState() => _CURDPageState();
+  State<FetchByID> createState() => _CURDPageState();
 }
 
 String paymentId = "";
 
-class _CURDPageState extends State<CURDPage> {
+class _CURDPageState extends State<FetchByID> {
   Future<UpiModel> getDetails(String id) async {
     String url = 'https://api.razorpay.com/v1/payments/$id';
     String basicAuth =
@@ -76,7 +77,6 @@ class _CURDPageState extends State<CURDPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   UpiModel? upidata = snapshot.data;
-                  int index = 0;
                   return Center(
                     child: Column(
                       children: [

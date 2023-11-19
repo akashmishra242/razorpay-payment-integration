@@ -4,21 +4,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/fetch_all_model.dart';
 
-const String keyID = 'rzp_test_oXV9AaMUvzydYV';
-const String keySecret = '5yXOXDpaj0IvxnGSx6zwwHM5';
-Map<String, dynamic> dataMap = {};
+FetchAllPaymentModel? dataMap;
 
-class FetchAllPayment extends StatefulWidget {
-  const FetchAllPayment({super.key});
+class FetchAllPayment extends StatelessWidget {
+  final String keyID;
+final String keySecret;
+  const FetchAllPayment({super.key,required this.keyID,required this.keySecret});
 
-  @override
-  State<FetchAllPayment> createState() => _FetchAllPaymentState();
-}
-
-class _FetchAllPaymentState extends State<FetchAllPayment> {
-  Future<FetchAllModel> getDetails() async {
+  Future<List<Item>?> getDetails() async {
+    List<Item>? items;
     String url =
-        'https://api.razorpay.com/v1/payments?from=1686444630&to=1698799830&count=2&skip=1';
+        'https://api.razorpay.com/v1/payments?from=1686444630&to=1698799830&count=5';
     String basicAuth =
         'Basic ${base64Encode(utf8.encode('$keyID:$keySecret'))}';
     try {
@@ -32,27 +28,25 @@ class _FetchAllPaymentState extends State<FetchAllPayment> {
 
       if (response.statusCode == 200) {
         // Refund request successful
-        dataMap = jsonDecode(response.body);
+        final data = fetchAllPaymentModelFromJson(response.body);
+        debugPrint(response.body);
         Fluttertoast.showToast(msg: "success");
-        print(dataMap);
-        return FetchAllModel();
+        items = data.items;
+        //print(dataMap);
+        //   count = dataMap['count'].toString();
+        return items;
 
         ///  ---Dikkat
       } else {
         Fluttertoast.showToast(
             msg:
                 "Refund request failed with status code ${response.statusCode}");
-        return FetchAllModel();
+        return items;
       }
     } catch (error) {
       Fluttertoast.showToast(msg: "Error creating refund request: $error");
     }
-    return FetchAllModel();
-  }
-
-  @override
-  void initState() {
-    super.initState();
+    return items;
   }
 
   @override
@@ -63,63 +57,51 @@ class _FetchAllPaymentState extends State<FetchAllPayment> {
         backgroundColor: Colors.greenAccent,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            FutureBuilder(
-              future: getDetails(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  print("snapshot");
-                  FetchAllModel? data = snapshot.data;
-                  //   List<Item>? item = data!.items;
-
-                  return const Center(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: 0, vertical: 8.0),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 30,
-                                child: Text("ID: {data.count.toString()}"),
-                              ),
-                              SizedBox(
-                                height: 30,
-                                child: Text("ID: {item?[0].id.toString()}"),
-                              ),
-                              SizedBox(
-                                height: 30,
-                                child: Text("ID: {item?[0].id.toString()}"),
-                              ),
-                              SizedBox(
-                                height: 30,
-                                child: Text("ID: {item?[0].id.toString()}"),
-                              ),
-                              SizedBox(
-                                height: 30,
-                                child: Text("ID: {item?[0].id.toString()}"),
-                              ),
-                            ],
+        child: FutureBuilder(
+          future: getDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              debugPrint("snapshot");
+              List<Item>? items = snapshot.data;
+        
+              return Center(
+                  child: ListView.builder(
+                      itemCount: items!.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration:BoxDecoration(border: Border.all(color: Colors.black)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Text("ID: ${items[index].id}",
+                                    style: const TextStyle(fontSize: 16)),
+                                Text("Status: ${items[index].status}",
+                                    style: const TextStyle(fontSize: 16)),
+                                Text("Amount: ${items[index].amount}",
+                                    style: const TextStyle(fontSize: 16)),
+                                Text("Method: ${items[index].method}",
+                                    style: const TextStyle(fontSize: 16)),
+                                Text("Email: ${items[index].email}",
+                                    style: const TextStyle(fontSize: 16)),
+                                Text("Contact: ${items[index].contact}",
+                                    style: const TextStyle(fontSize: 16)),
+                                Text(
+                                    "Amount Refunded: ${items[index].amountRefunded}",
+                                    style: const TextStyle(fontSize: 16)),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          ],
+                        );
+                      }));
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ),
     );

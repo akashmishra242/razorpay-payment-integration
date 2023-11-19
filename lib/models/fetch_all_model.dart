@@ -1,45 +1,46 @@
 // To parse this JSON data, do
 //
-//     final fetchAllModel = fetchAllModelFromJson(jsonString);
+//     final fetchAllPaymentModel = fetchAllPaymentModelFromJson(jsonString);
 
 import 'dart:convert';
 
-FetchAllModel fetchAllModelFromJson(String str) => FetchAllModel.fromJson(json.decode(str));
+FetchAllPaymentModel fetchAllPaymentModelFromJson(String str) => FetchAllPaymentModel.fromJson(json.decode(str));
 
-String fetchAllModelToJson(FetchAllModel data) => json.encode(data.toJson());
+String fetchAllPaymentModelToJson(FetchAllPaymentModel data) => json.encode(data.toJson());
 
-class FetchAllModel {
+class FetchAllPaymentModel {
     final String? entity;
     final int? count;
-    final List<Item>? items;
+    final List<Item> items;
 
-    FetchAllModel({
+    FetchAllPaymentModel({
         this.entity,
         this.count,
-        this.items,
+        required this.items,
     });
 
-    FetchAllModel copyWith({
+    FetchAllPaymentModel copyWith({
         String? entity,
         int? count,
         List<Item>? items,
-    }) =>
-        FetchAllModel(
+    }) => 
+        FetchAllPaymentModel(
             entity: entity ?? this.entity,
             count: count ?? this.count,
             items: items ?? this.items,
         );
 
-    factory FetchAllModel.fromJson(Map<String, dynamic> json) => FetchAllModel(
+    factory FetchAllPaymentModel.fromJson(Map<String, dynamic> json) => FetchAllPaymentModel(
         entity: json["entity"],
         count: json["count"],
-        items: json["items"] == null ? [] : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
+        items: json["items"] = List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
         "entity": entity,
         "count": count,
-        "items": items == null ? [] : List<dynamic>.from(items!.map((x) => x.toJson())),
+        // ignore: unnecessary_null_comparison
+        "items": items == null ? [] : List<Item>.from(items.map((x) => x.toJson())),
     };
 }
 
@@ -136,7 +137,7 @@ class Item {
         dynamic errorReason,
         AcquirerData? acquirerData,
         int? createdAt,
-    }) =>
+    }) => 
         Item(
             id: id ?? this.id,
             entity: entity ?? this.entity,
@@ -189,7 +190,7 @@ class Item {
         vpa: json["vpa"],
         email: json["email"],
         contact: json["contact"],
-        notes: json["notes"] == null ? null : Notes.fromJson(json["notes"]),
+     //   notes: json["notes"] == null ? null : Notes.fromJson(json["notes"]),
         fee: json["fee"],
         tax: json["tax"],
         errorCode: json["error_code"],
@@ -197,7 +198,7 @@ class Item {
         errorSource: json["error_source"],
         errorStep: json["error_step"],
         errorReason: json["error_reason"],
-        acquirerData: json["acquirer_data"] == null ? null : AcquirerData.fromJson(json["acquirer_data"]),
+        //acquirerData: json["acquirer_data"] == null ? null : AcquirerData.fromJson(json["acquirer_data"]),
         createdAt: json["created_at"],
     );
 
@@ -249,7 +250,7 @@ class AcquirerData {
         String? bankTransactionId,
         String? rrn,
         String? upiTransactionId,
-    }) =>
+    }) => 
         AcquirerData(
             bankTransactionId: bankTransactionId ?? this.bankTransactionId,
             rrn: rrn ?? this.rrn,
@@ -278,7 +279,7 @@ class Notes {
 
     Notes copyWith({
         String? address,
-    }) =>
+    }) => 
         Notes(
             address: address ?? this.address,
         );

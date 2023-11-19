@@ -16,7 +16,14 @@ String amount = "";
 String status = "";
 
 class Refund extends StatefulWidget {
-  const Refund({super.key});
+  final String keyID;
+  final String keySecret;
+  final int amount;
+  const Refund(
+      {super.key,
+      required this.keyID,
+      required this.keySecret,
+      required this.amount});
 
   @override
   State<Refund> createState() => _RefundState();
@@ -29,38 +36,43 @@ class KeyValue {
   KeyValue(this.key, this.value);
 }
 
-Future<Map<String, dynamic>> getDetails(String id) async {
-  String url = 'https://api.razorpay.com/v1/payments/$id';
-  String basicAuth = 'Basic ${base64Encode(utf8.encode('$keyID:$keySecret'))}';
-  try {
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': basicAuth,
-      },
-    );
+class _RefundState extends State<Refund> {
+  Future<Map<String, dynamic>> getDetails(String id) async {
+    String url = 'https://api.razorpay.com/v1/payments/$id';
+    String basicAuth =
+        'Basic ${base64Encode(utf8.encode('${widget.keyID}:${widget.keySecret}'))}';
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': basicAuth,
+        },
+      );
 
-    if (response.statusCode == 200) {
-      // Refund request successful
-      dataMap = jsonDecode(response.body);
-      Fluttertoast.showToast(msg: "success");
-      return dataMap;
-    } else {
-      Fluttertoast.showToast(
-          msg: "Refund request failed with status code ${response.statusCode}");
-      return dataMap;
+      if (response.statusCode == 200) {
+        // Refund request successful
+        dataMap = jsonDecode(response.body);
+        Fluttertoast.showToast(msg: "success");
+        return dataMap;
+      } else {
+        Fluttertoast.showToast(
+            msg:
+                "Refund request failed with status code ${response.statusCode}");
+        return dataMap;
+      }
+    } catch (error) {
+      Fluttertoast.showToast(msg: "Error creating refund request: $error");
     }
-  } catch (error) {
-    Fluttertoast.showToast(msg: "Error creating refund request: $error");
+    return dataMap;
   }
-  return dataMap;
-}
 
-  void processRefund(String paymentId, double amount) async {
+  void processRefund(String paymentId, int amount) async {
+
+    // Payment needs to be in Captured Status before Refunded.
     String url = 'https://api.razorpay.com/v1/payments/$paymentId/refund';
     String basicAuth =
-        'Basic ${base64Encode(utf8.encode('$keyID:$keySecret'))}';
+        'Basic ${base64Encode(utf8.encode('${widget.keyID}:${widget.keySecret}'))}';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -74,7 +86,8 @@ Future<Map<String, dynamic>> getDetails(String id) async {
       if (response.statusCode == 200) {
         // Refund request successful
         //var responseData = jsonDecode(response.body);
-        Fluttertoast.showToast(msg: "Amount of $amount successfully refunded to Your Account");
+        Fluttertoast.showToast(
+            msg: "Amount of $amount successfully refunded to Your Account");
       } else {
         Fluttertoast.showToast(
             msg:
@@ -85,7 +98,6 @@ Future<Map<String, dynamic>> getDetails(String id) async {
     }
   }
 
-class _RefundState extends State<Refund> {
   @override
   Widget build(BuildContext context) {
     List<KeyValue> items = [
@@ -120,7 +132,7 @@ class _RefundState extends State<Refund> {
                     dataMap = await getDetails(paymentId);
                     setState(() {
                       log(dataMap.toString());
-                      log(dataMap['id']);
+                      //  log(dataMap['id']);
                       method = dataMap['id'];
                       amount = dataMap['amount'].toString();
                       status = dataMap['status'].toString();
@@ -143,7 +155,7 @@ class _RefundState extends State<Refund> {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      processRefund(paymentId, 2000);
+                      processRefund(paymentId, widget.amount);
                     },
                     child: const Text("Get Refund")),
               ],

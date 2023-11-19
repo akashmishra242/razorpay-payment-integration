@@ -1,92 +1,129 @@
-class Refund {
-  final String id;
-  final String entity;
-  final int amount;
-  final String currency;
-  final String paymentId;
-  final Notes notes;
-  final String? receipt;
-  final AcquirerData acquirerData;
-  final int createdAt;
-  final String? batchId;
-  final String status;
-  final String speedProcessed;
-  final String speedRequested;
+// To parse this JSON data, do
+//
+//     final fetchAllRefundModel = fetchAllRefundModelFromJson(jsonString);
 
-  Refund({
-    required this.id,
-    required this.entity,
-    required this.amount,
-    required this.currency,
-    required this.paymentId,
-    required this.notes,
-    required this.acquirerData,
-    required this.createdAt,
-    this.receipt,
-    required this.batchId,
-    required this.status,
-    required this.speedProcessed,
-    required this.speedRequested,
-  });
+import 'dart:convert';
 
-  factory Refund.fromJson(Map<String, dynamic> json) {
-    return Refund(
-      id: json['id'],
-      entity: json['entity'],
-      amount: json['amount'],
-      currency: json['currency'],
-      paymentId: json['payment_id'],
-      notes: Notes.fromJson(json['notes']),
-      receipt: json['receipt'],
-      acquirerData: AcquirerData.fromJson(json['acquirer_data']),
-      createdAt: json['created_at'],
-      batchId: json['batch_id'],
-      status: json['status'],
-      speedProcessed: json['speed_processed'],
-      speedRequested: json['speed_requested'],
+FetchAllRefundModel fetchAllRefundModelFromJson(String str) => FetchAllRefundModel.fromJson(json.decode(str));
+
+String fetchAllRefundModelToJson(FetchAllRefundModel data) => json.encode(data.toJson());
+
+class FetchAllRefundModel {
+    final String? entity;
+    final int? count;
+    final List<Item> items;
+
+    FetchAllRefundModel({
+        this.entity,
+        this.count,
+        required this.items,
+    });
+
+    factory FetchAllRefundModel.fromJson(Map<String, dynamic> json) => FetchAllRefundModel(
+        entity: json["entity"],
+        count: json["count"],
+        items: json["items"] = List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
     );
-  }
+
+    Map<String, dynamic> toJson() => {
+        "entity": entity,
+        "count": count,
+        "items": items == null ? [] : List<dynamic>.from(items!.map((x) => x.toJson())),
+    };
 }
 
-class Notes {
-  final String comment;
+class Item {
+    final String? id;
+    final String? entity;
+    final int? amount;
+    final String? currency;
+    final String? paymentId;
+    final Notes? notes;
+    final dynamic receipt;
+    final AcquirerData? acquirerData;
+    final int? createdAt;
+    final dynamic batchId;
+    final String? status;
+    final String? speedProcessed;
+    final String? speedRequested;
 
-  Notes({required this.comment});
+    Item({
+        this.id,
+        this.entity,
+        this.amount,
+        this.currency,
+        this.paymentId,
+        this.notes,
+        this.receipt,
+        this.acquirerData,
+        this.createdAt,
+        this.batchId,
+        this.status,
+        this.speedProcessed,
+        this.speedRequested,
+    });
 
-  factory Notes.fromJson(Map<String, dynamic> json) {
-    return Notes(comment: json['comment']);
-  }
+    factory Item.fromJson(Map<String, dynamic> json) => Item(
+        id: json["id"],
+        entity: json["entity"],
+        amount: json["amount"],
+        currency: json["currency"],
+        paymentId: json["payment_id"],
+      //  notes: json["notes"] == null ? null : Notes.fromJson(json["notes"]),
+        receipt: json["receipt"],
+      //  acquirerData: json["acquirer_data"] == null ? null : AcquirerData.fromJson(json["acquirer_data"]),
+        createdAt: json["created_at"],
+        batchId: json["batch_id"],
+        status: json["status"],
+        speedProcessed: json["speed_processed"],
+        speedRequested: json["speed_requested"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "entity": entity,
+        "amount": amount,
+        "currency": currency,
+        "payment_id": paymentId,
+      //  "notes": notes?.toJson(),
+        "receipt": receipt,
+        //"acquirer_data": acquirerData?.toJson(),
+        "created_at": createdAt,
+        "batch_id": batchId,
+        "status": status,
+        "speed_processed": speedProcessed,
+        "speed_requested": speedRequested,
+    };
 }
 
 class AcquirerData {
-  final String arn;
+    final String? arn;
 
-  AcquirerData({required this.arn});
+    AcquirerData({
+        this.arn,
+    });
 
-  factory AcquirerData.fromJson(Map<String, dynamic> json) {
-    return AcquirerData(arn: json['arn']);
-  }
+    factory AcquirerData.fromJson(Map<String, dynamic> json) => AcquirerData(
+        arn: json["arn"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "arn": arn,
+    };
 }
 
-class Collection {
-  final String entity;
-  final int count;
-  final List<Refund> items;
+class Notes {
+    final String? comment;
 
-  Collection({
-    required this.entity,
-    required this.count,
-    required this.items,
-  });
+    Notes({
+        this.comment,
+    });
 
-  factory Collection.fromJson(Map<String, dynamic> json) {
-    var itemData = json['items'] as List<dynamic>;
-    List<Refund> refundItems = itemData.map((item) => Refund.fromJson(item)).toList();
-
-    return Collection(
-      entity: json['entity'],
-      count: json['count'],
-      items: refundItems,
+    factory Notes.fromJson(Map<String, dynamic> json) => Notes(
+        comment: json["comment"],
     );
-  }
+
+    Map<String, dynamic> toJson() => {
+        "comment": comment,
+    };
 }

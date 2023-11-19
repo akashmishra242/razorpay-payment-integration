@@ -5,23 +5,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../models/refunds.dart';
 import 'package:http/http.dart' as http;
 
-Map<String, dynamic> dataMap = {};
-Collection collection = Collection.fromJson(dataMap);
-const String keyID = 'rzp_test_oXV9AaMUvzydYV';
-const String keySecret = '5yXOXDpaj0IvxnGSx6zwwHM5';
-List<Refund> refunds = collection.items;
+//List<Refund> refunds = collection.items;
 
-class AllRefunds extends StatefulWidget {
-  const AllRefunds({super.key});
+class AllRefunds extends StatelessWidget {
+  final String keyID;
+  final String keySecret;
+  const AllRefunds({super.key,required this.keyID,required this.keySecret});
 
-  @override
-  State<AllRefunds> createState() => _AllRefundsState();
-}
-
-class _AllRefundsState extends State<AllRefunds> {
-  void getDetails() async {
-    String url =
-        'https://api.razorpay.com/v1/payments/pay_Mr7Hgx714XiLzw/refunds';
+  Future<List<Item>?> getDetails() async {
+    List<Item>? items;
+    String url = 'https://api.razorpay.com/v1/refunds';
     String basicAuth =
         'Basic ${base64Encode(utf8.encode('$keyID:$keySecret'))}';
     try {
@@ -35,38 +28,20 @@ class _AllRefundsState extends State<AllRefunds> {
 
       if (response.statusCode == 200) {
         // Refund request successful
-        dataMap = jsonDecode(response.body);
-        collection = Collection.fromJson(dataMap);
-        refunds = collection.items;
+        final dataMap = fetchAllRefundModelFromJson(response.body);
+        List<Item>? items = dataMap.items;
         Fluttertoast.showToast(msg: "success");
-        setState(() {});
-        for (Refund refund in refunds) {
-          print('Refund ID: ${refund.id}');
-          print('Amount: ${refund.amount} ${refund.currency}');
-          print('Payment ID: ${refund.paymentId}');
-          print('Status: ${refund.status}');
-          print('Notes: ${refund.notes.comment}');
-          print('Acquirer ARN: ${refund.acquirerData.arn}');
-          print('Created At: ${refund.createdAt}');
-          print('Batch ID: ${refund.batchId}');
-          print('Speed Processed: ${refund.speedProcessed}');
-          print('Speed Requested: ${refund.speedRequested}');
-          print('--------------------------------');
-        }
+        return items;
       } else {
         Fluttertoast.showToast(
             msg:
                 "Refund request failed with status code ${response.statusCode}");
+        return items;
       }
     } catch (error) {
       Fluttertoast.showToast(msg: "Error creating refund request: $error");
+      return items;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getDetails();
   }
 
   @override
@@ -77,7 +52,49 @@ class _AllRefundsState extends State<AllRefunds> {
         appBar: AppBar(
           title: const Text('Material App Bar'),
         ),
-        body: const Center(),
+        body: Center(
+          child: FutureBuilder(
+              future: getDetails(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  debugPrint("snapshot");
+                  List<Item>? items = snapshot.data;
+
+                  return Center(
+                      child: ListView.builder(
+                          itemCount: items!.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Text("ID: ${items[index].id}",
+                                        style: const TextStyle(fontSize: 16)),
+                                    Text("Status: ${items[index].status}",
+                                        style: const TextStyle(fontSize: 16)),
+                                    Text("Amount: ${items[index].amount}",
+                                        style: const TextStyle(fontSize: 16)),
+                                    Text("CreatedAt: ${items[index].createdAt}",
+                                        style: const TextStyle(fontSize: 16)),
+                                    Text("Currency: ${items[index].currency}",
+                                        style: const TextStyle(fontSize: 16)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }));
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              }),
+        ),
       ),
     );
   }
