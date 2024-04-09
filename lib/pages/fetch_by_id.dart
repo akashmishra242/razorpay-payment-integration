@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:rozarpay/refund.dart';
-
+import '../secrets.dart';
 import '../models/upi_model.dart';
 
 class FetchByID extends StatefulWidget {
-
   const FetchByID({super.key});
 
   @override
@@ -22,7 +19,7 @@ class _CURDPageState extends State<FetchByID> {
   Future<UpiModel> getDetails(String id) async {
     String url = 'https://api.razorpay.com/v1/payments/$id';
     String basicAuth =
-        'Basic ${base64Encode(utf8.encode('$keyID:$keySecret'))}';
+        'Basic ${base64Encode(utf8.encode('$keyId:$keySecret'))}';
     try {
       final response = await http.get(
         Uri.parse(url),

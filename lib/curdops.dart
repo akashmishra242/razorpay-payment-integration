@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rozarpay/pages/fetch_all_payments.dart';
 import 'package:rozarpay/pages/fetch_by_id.dart';
 import 'package:rozarpay/pages/getAllRefunds.dart';
-import 'package:rozarpay/utils/routes.dart';
+import 'package:rozarpay/secrets.dart';
 
 class CURD extends StatelessWidget {
   const CURD({super.key});
@@ -13,7 +13,7 @@ class CURD extends StatelessWidget {
       title: 'CURD',
       theme: ThemeData(colorScheme:const  ColorScheme.light()),
       home: Scaffold(
-        
+
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
           title: const Text('CURD Operation Razorpay'),
@@ -32,7 +32,7 @@ class CURD extends StatelessWidget {
                     },
                     child: const Text("Fetch Payment By ID")),
                     const SizedBox(height: 10,),
-               ElevatedButton(
+              ElevatedButton(
                     onPressed: () {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
@@ -41,11 +41,11 @@ class CURD extends StatelessWidget {
                     },
                     child: const Text("Fetch all Payments")),
                     const SizedBox(height: 10,),
-                     ElevatedButton(
+                ElevatedButton(
                     onPressed: () {
                       Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
-                        return const AllRefunds();
+                        return const AllRefunds(keyID: keyId,keySecret: keySecret,);
                       }));
                     },
                     child: const Text("Fetch all Refunds")),

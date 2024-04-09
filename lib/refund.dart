@@ -7,8 +7,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 final _formKey = GlobalKey<FormState>();
 String paymentId = "";
-const String keyID = 'rzp_test_oXV9AaMUvzydYV';
-const String keySecret = '5yXOXDpaj0IvxnGSx6zwwHM5';
 Map<String, dynamic> dataMap = {};
 
 String method = "";
